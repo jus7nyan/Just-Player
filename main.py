@@ -1,7 +1,15 @@
+from re import A
 import urwid
 import audio
+import os
 
 player = audio.Player()
+
+class FButton(urwid.Button):
+    def __init__(self, label, on_press=None, user_data=None):
+        self.button_left, self.button_right = urwid.Text(""),urwid.Text("")
+        super().__init__(label, on_press, user_data)
+
 
 
 def quit_(key):
@@ -48,29 +56,36 @@ def main(args):
     sng = player.playlists[pl]["list"][idx]
     
     numb = urwid.Text(str(idx+1),align="center")
-    nm = urwid.Filler(numb)
+    nm = urwid.LineBox(numb)
+    nm = urwid.Filler(nm)
     label = urwid.Text("",align="center")
     label.set_text(sng)
 
+
+    c,r = urwid.raw_display.Screen().get_cols_rows()
+
     lb  = urwid.Filler(label)
+    
+    pr = FButton("",on_press=pervious,user_data=(label,numb))
+    pr = urwid.LineBox(pr,title="<<")
 
-    pr = urwid.Button("<<",on_press=pervious,user_data=(label,numb))
-    pr.button_left = ""
-    pr.button_right = ""
+    pp = FButton("",on_press=plpa)
+    pp = urwid.LineBox(pp,title="||")
 
-    pp = urwid.Button("||",on_press=plpa)
-    pr.button_left = ""
-    pr.button_right = ""
+    nex = FButton("",on_press=next,user_data=(label,numb))
+    nex = urwid.LineBox(nex,title=">>")
 
-    nex = urwid.Button(">>",on_press=next,user_data=(label,numb))
-    pr.button_left = ""
-    pr.button_right = ""
+    shuf = FButton("",on_press=shuffle,user_data=(label,numb))
+    shuf = urwid.LineBox(shuf, title="~")
+    shuf = urwid.Filler(shuf)
+    
+
 
     btn = [pr,pp,nex]
 
-    buttons = urwid.Filler(urwid.Columns(btn),valign="bottom")
-
-    pille = urwid.Pile([nm,lb, buttons,urwid.Filler(urwid.Button(u"~",on_press=shuffle,user_data=(label,numb)))])
+    buttons = urwid.Columns(btn)
+    buttons = urwid.Filler(buttons)
+    pille = urwid.Pile([nm,lb, buttons, shuf])
     win = urwid.LineBox(pille,title="Just Player")
 
     ml = urwid.MainLoop(win, unhandled_input=quit_)
