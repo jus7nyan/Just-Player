@@ -1,13 +1,17 @@
 import audio_metadata
 import pygame
 from random import randint
-import time
 import os
+import lyricsgenius
 
 pygame.init()
 
 class Player:
     def __init__(self) -> None:
+        self.token = "XHUCKXOEPYzU8jy0kopz6e5NdhNNnpoTxgOzlq5vSMhvIFjXB72W-Kc_JnKzJmZF"
+        self.genius = lyricsgenius.Genius(self.token,verbose=False)
+        
+
         self.mixer = pygame.mixer.music
         self.playlists= {}
         self.now = {"playing": False, "playlist": None, "index": 0}
@@ -70,9 +74,10 @@ class Player:
         self.now["playlist"] = playlist
         self.now["index"] = idx
 
+
         if shuffle:
             self.shuffle()
-            self.mixer.play()
+            #self.mixer.play()
 
         return (name, path, dur)
     
@@ -134,6 +139,28 @@ class Player:
         self.mixer.pause()
         self.mixer.unpause()
         self.now["index"] = idx
+    
+
+    def get_lyr(self):
+        ind,ln = self.now["index"], self.now["playlist"]
+        sng = self.playlists[ln]["list"][ind].replace("(1)","").replace("(2)","")
+        songs = self.genius.search(sng[:-3])["hits"]
+        res = []
+        for i in songs:
+            artist = i["result"]["artist_names"]
+            title = i["result"]["title"]
+            res.append(f"{artist} -- {title}")
+        
+        return res
+    
+    def get_text(self, song):
+        artist, title = song.split(" -- ")
+
+        song = self.genius.search_song(title,artist)
+
+        lyrics = song.lyrics
+
+        return [lyrics, artist, title]
 
         
 
@@ -154,3 +181,5 @@ if __name__ == "__main__":
             p.shuffle()
         elif ("p") in a:
             p.play_pause()
+        print(p.mixer.get_pos()/1000)
+        print(p.playlists["pl1"]["metadata"][0].streaminfo.duration)
