@@ -188,4 +188,7 @@ if __name__ == "__main__":
     if argv[1:]:
         main(argv[1:])
     else:
-        main(["/home/justnyan/VK/"])
+        try:
+            main("./")
+        except:
+            print("please specify the path to the playlist in the launch argument")
