@@ -105,7 +105,7 @@ async def mlen():
         except:
             continue
         
-        await asyncio.sleep(0)
+        await asyncio.sleep(0.3)
 
 def lyr_now(arg):
     sngs = player.get_lyr()
