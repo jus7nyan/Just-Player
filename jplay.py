@@ -95,9 +95,11 @@ async def mlen():
             sec1 = round(sec1 % 60)
             
             if (hour == 23) and (min == 59) and (sec == 60):
-                continue
+                hour = hour1
+                min=min1
+                sec=sec1
 
-            elif (hour != 0 and min != 0):
+            if (hour != 0 and min != 0):
                 mll.set_title(f"{hour}:{min}:{sec} / {hour1}:{min1}:{sec1}")
             else:
                 mll.set_title(f"{min}:{sec} / {min1}:{sec1}")
